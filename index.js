@@ -40,6 +40,12 @@ const functionExpression = {
 }
 functionExpression.showCount(); // return 10, this = Object {...}
 
+const newShowCount = functionExpression.showCount;
+newShowCount(); // return undefined
+
+const newBoundShowCount = newShowCount.bind(functionExpression);
+newBoundShowCount(); // return 10, this = Object {...}
+
 const functionArrow = {
   count: 10,
   showCount: () => {
@@ -62,7 +68,6 @@ function ClassFA() {
   this.age = 0;
 
   setInterval(() => {
-    console.log(this);
     this.age++; // this = ClassFA {...}
   }, 1000);
 }
@@ -82,18 +87,3 @@ array.forEach(function(v, i) {
 array.forEach((v, i) => this[i] = v + 1);    // this = global window object 
 
 array.forEach((v, i) => this[i] = v + 1, array);   // this = global window object 
-
-
-// example with this
-this.x = 9;
-const module = {
-  x: 81,
-  getX: function() { return this.x; }
-};
-module.getX(); // 81
-const getX = module.getX;
-getX(); // 9, поскольку в этом случае this ссылается на глобальный объект
-const boundGetX = getX.bind(module); // создаём новую функцию с this, привязанным к module
-boundGetX(); // 81
-
-//Функции-генераторы
