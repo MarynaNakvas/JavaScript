@@ -10,13 +10,13 @@ const summFE = function(a, b) {
 const name = summFE(4);
 
 // arrow function
-const double = a => 2 * a;
+const doubleFA = a => 2 * a;
 const summFA = (a, b) => {
   return a + b;
 };
 
 // global
-// console.log(this); // return global window object
+console.log(this); // return global window object
 
 // function
 function functionDeclaration() {
@@ -27,51 +27,83 @@ function functionDeclaration() {
   return this; // return global window object // if 'use strict' return undefined
 })();
 
-const f = () => {
+const functionArrow = () => {
   return this; // return global window object // if 'use strict' also
 }; 
 
 // object
-const functionExpression = {
+const objectFD = {
+  count: 10,
+  showCount: function showThisCount() {
+    return this.count;
+  },
+}
+objectFD.showCount(); // return 10, this = Object {...}
+
+const objectFE = {
   count: 10,
   showCount: function() {
     return this.count;
   }
 }
-functionExpression.showCount(); // return 10, this = Object {...}
+objectFE.showCount(); // return 10, this = Object {...}
 
-const newShowCount = functionExpression.showCount;
-newShowCount(); // return undefined
+const newObject = {
+  count: 20,
+}
 
-const newBoundShowCount = newShowCount.bind(functionExpression);
-newBoundShowCount(); // return 10, this = Object {...}
+const showCountBind = objectFE.showCount.bind(newObject);
+showCountBind(); // return 20, this = newObject {...}
 
-const functionArrow = {
+const showCountCall = objectFE.showCount.call(newObject);
+const showCountApply = objectFE.showCount.apply(newObject);
+showCountCall; // return 20, this = newObject {...}
+showCountApply; // return 20, this = newObject {...}
+
+const objectFA = {
   count: 10,
   showCount: () => {
     return this.count;
   },
 }
-functionArrow.showCount(); // return undefined, this = global window object
+objectFA.showCount(); // return undefined, this = global window object
 
 // class
-function ClassFE() {
-  this.age = 0;
+class ClassFD {
+  constructor(name) {
+    this.name = name;
+  }
 
-  setInterval(function() {
-    this.age++; // this = global window object
-  }, 1000);
+  showName = function showThisName() {
+    return this.name;
+  }
 }
-const newFE = new ClassFE();
+const newFD = new ClassFD("Katya"); // return "Katya", this = ClassFD
+const showKateName = newFD.showName;
+showKateName(); // return error: function showThisName cannot read props name of undefined
 
-function ClassFA() {
-  this.age = 0;
+const showKateNameBind = showKateName.bind(newFD);
+showKateNameBind(); // return "Katya", this = ClassFD
 
-  setInterval(() => {
-    this.age++; // this = ClassFA {...}
-  }, 1000);
+class ClassFE {
+  constructor(name) {
+    this.name = name;
+  }
+
+  showName = function() {
+    return this;
+  }
 }
-const newFA = new ClassFA();
+const newFE = new ClassFE("Pasha"); // return "Pasha", this = ClassFE
+
+class ClassFA {
+  constructor(name) {
+    this.name = name;
+  }
+
+  showName = () => this.name
+}
+const newFA = new ClassFA("Petr"); // return "Petr", this = ClassFA
 
 // loop
 const array = [5, 10, 45, 67];
@@ -81,9 +113,7 @@ array.forEach(function(v, i) {
 });
 
 array.forEach(function(v, i) {
-  return this[i] = v + 1;    // this = jow 
+  return this[i] = v + 1;    // this = array 
 }, array);
 
 array.forEach((v, i) => this[i] = v + 1);    // this = global window object 
-
-array.forEach((v, i) => this[i] = v + 1, array);   // this = global window object 
